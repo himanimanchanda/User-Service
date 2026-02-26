@@ -41,6 +41,6 @@ public class User {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne
-    @JoinColumn(name = "organisation_id")
+    @JoinColumn(name = "organisation_id" , nullable = true)
     private Organisation organisation;
 }

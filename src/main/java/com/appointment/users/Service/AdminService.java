@@ -25,20 +25,20 @@ public class AdminService {
         this.orr=orr;
     }
     public User onboardService(UserRegisterRequest urr, Long orgId){
-       if(urr.getRole()==Role.USER)throw new RuntimeException("invalid role");
+       if(urr.getRole()==Role.PATIENT)throw new RuntimeException("invalid role");
        usp.findByEmail(urr.getEmail()).ifPresent(user -> {
             throw new UserAlreadyExistsException("user already exist");
         });
         Organisation org=orr.findById(orgId).orElseThrow(()-> new RuntimeException("organisation not found"));
-        User use=new User();
-        use.setEmail(urr.getEmail());
-        use.setName(urr.getName());
-        use.setRole(urr.getRole()==null? Role.DOCTOR:urr.getRole());
-        use.setPassword(pse.encode(urr.getPassword()));
-        use.setIsactive(true);
-        use.setPhone(urr.getPhone());
-        use.setOrganisation(org);
-        return usp.save(use);
+        User user=new User();
+        user.setEmail(urr.getEmail());
+        user.setName(urr.getName());
+        user.setRole(urr.getRole()==null? Role.DOCTOR:urr.getRole());
+        user.setPassword(pse.encode(urr.getPassword()));
+        user.setIsactive(true);
+        user.setPhone(urr.getPhone());
+        user.setOrganisation(org);
+        return usp.save(user);
     }
     public User changeActiveStatusService(Long id,Long orgId){
         User user =usp.findByIdAndOrganisation_Id(id,orgId).orElseThrow(() -> new UsernameNotFoundException("User not found with this id"));
