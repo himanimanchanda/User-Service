@@ -8,7 +8,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@Data
 @Entity
 @Table(name="organisation",uniqueConstraints = {
         @UniqueConstraint(columnNames = {"registrationnumber"})

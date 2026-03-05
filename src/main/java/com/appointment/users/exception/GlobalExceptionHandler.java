@@ -10,68 +10,52 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 404 Handler
+    // 1. 404 Handler (Resource Not Found)
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiExceptionResponse> handleNotFound(ResourceNotFoundException ex){
-
-        ApiExceptionResponse error = new ApiExceptionResponse(
-                LocalDateTime.now(),
-                ex.getMessage(),
-                HttpStatus.NOT_FOUND.value()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-
-    // 409 Handler (Duplicate User)
+    // 2. 409 Handler (User or Organisation Already Exists)
+    // Super Admin jab duplicate Org banayega tab bhi yahi call hoga
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<ApiExceptionResponse> handleUserExists(UserAlreadyExistsException ex){
-
-        ApiExceptionResponse error = new ApiExceptionResponse(
-                LocalDateTime.now(),
-                ex.getMessage(),
-                HttpStatus.CONFLICT.value()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    public ResponseEntity<ApiExceptionResponse> handleConflict(UserAlreadyExistsException ex){
+        return buildResponse(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
-
-    // Generic Handler (VERY IMPORTANT)
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiExceptionResponse> handleGeneric(Exception ex){
-
-        ApiExceptionResponse error = new ApiExceptionResponse(
-                LocalDateTime.now(),
-                "Internal Server Error",
-                HttpStatus.INTERNAL_SERVER_ERROR.value()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    // 3. 403 Forbidden (Security Role Mismatch)
+    // Ye tab trigger hoga jab koi normal user /api/superadmin access karega
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ApiExceptionResponse> handleAccessDenied(Exception ex){
+        return buildResponse("You don't have permission to access this resource.", HttpStatus.FORBIDDEN);
     }
+
+    // 4. 401 Unauthorized (Invalid Login)
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ApiExceptionResponse> handleInvalidCredentials(InvalidCredentialsException ex){
-
-        ApiExceptionResponse error = new ApiExceptionResponse(
-                LocalDateTime.now(),
-                ex.getMessage(),
-                HttpStatus.UNAUTHORIZED.value()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+        return buildResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
+    // 5. 403 Forbidden (Account Banned/Disabled)
     @ExceptionHandler(AccountDisabledException.class)
     public ResponseEntity<ApiExceptionResponse> handleAccountDisabled(AccountDisabledException ex){
-
-        ApiExceptionResponse error = new ApiExceptionResponse(
-                LocalDateTime.now(),
-                ex.getMessage(),
-                HttpStatus.FORBIDDEN.value()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+        return buildResponse(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
+    // 6. Generic Handler (Internal Server Error)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiExceptionResponse> handleGeneric(Exception ex){
+        // Print stack trace for debugging
+        return buildResponse("Internal Server Error: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // Helper Method to reduce code duplication
+    private ResponseEntity<ApiExceptionResponse> buildResponse(String message, HttpStatus status) {
+        ApiExceptionResponse error = new ApiExceptionResponse(
+                LocalDateTime.now(),
+                message,
+                status.value()
+        );
+        return new ResponseEntity<>(error, status);
+    }
 }
