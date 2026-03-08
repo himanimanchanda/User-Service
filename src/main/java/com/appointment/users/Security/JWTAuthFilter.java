@@ -49,6 +49,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             // Token invalid hai toh 401 Unauthorized bhej do
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            System.out.println("i am in catch block  token invalid issue-inside auth filter");
             return;
         }
 
@@ -61,6 +62,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         // Login aur registration paths par filter mat lagao
         return path.startsWith("/api/auth/")
                 || path.startsWith("/swagger-ui")
-                || path.startsWith("/v3/api-docs");
+                || path.startsWith("/v3/api-docs")
+                || path.startsWith("api/user");
     }
 }

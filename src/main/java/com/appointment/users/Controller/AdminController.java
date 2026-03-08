@@ -18,12 +18,12 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    @PostMapping("/onboard")
+    @PostMapping("/onboard-emp")
     public UserResponse onboard(@RequestBody UserRegisterRequest ur, HttpServletRequest request) {
         return adminService.onboardService(ur, request);
     }
 
-    @GetMapping("/org/showEmps")
+    @GetMapping("/show-emps")
     public List<UserResponse> getAllUser(HttpServletRequest request) {
         return adminService.getAllEmpService(request);
     }

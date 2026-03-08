@@ -1,4 +1,6 @@
 package com.appointment.users.entity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,6 +33,7 @@ public class User {
     private String phone;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -42,5 +45,6 @@ public class User {
 
     @ManyToOne
     @JoinColumn(name = "organisation_id" , nullable = true)
+    @JsonBackReference
     private Organisation organisation;
 }

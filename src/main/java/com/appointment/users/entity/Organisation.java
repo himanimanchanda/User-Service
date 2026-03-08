@@ -1,4 +1,5 @@
 package com.appointment.users.entity;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -24,6 +25,7 @@ public class Organisation {
     private String registrationnumber;
 
     @OneToMany(mappedBy = "organisation")
+    @JsonManagedReference
     private List<User> users;  // doctors/admins
 
    }

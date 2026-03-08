@@ -15,7 +15,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/all/organizations")
+    @GetMapping("/show-all-organisations")
     public List<OrganizationResponse> getAllOrganizations() {
         return userService.getAllOrganizationService();
     }

@@ -5,6 +5,8 @@ import com.appointment.users.Repository.UserRepository;
 import com.appointment.users.Service.SuperAdminService;
 import com.appointment.users.dto.AdminRegisterRequest;
 import com.appointment.users.dto.OrganisationRegisterRequest;
+import com.appointment.users.dto.OrganizationResponse;
+import com.appointment.users.dto.UserResponse;
 import com.appointment.users.entity.Organisation;
 import com.appointment.users.entity.Role;
 import com.appointment.users.entity.User;
@@ -24,7 +26,7 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public Organisation createOrganisation(OrganisationRegisterRequest request) {
+    public OrganizationResponse createOrganisation(OrganisationRegisterRequest request) {
         organisationRepository.findByRegistrationnumber(request.getRegistrationnumber())
                 .ifPresent(org -> {
                     throw new UserAlreadyExistsException("Organisation already exists!");
@@ -34,11 +36,11 @@ public class SuperAdminServiceImpl implements SuperAdminService {
         org.setName(request.getName());
         org.setLocation(request.getLocation());
         org.setRegistrationnumber(request.getRegistrationnumber());
-        return organisationRepository.save(org);
+        return new OrganizationResponse(organisationRepository.save(org));
     }
 
     @Override
-    public User createAdminForOrganisation(AdminRegisterRequest request) {
+    public UserResponse createAdminForOrganisation(AdminRegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new UserAlreadyExistsException("Email already taken!");
         }
@@ -54,7 +56,7 @@ public class SuperAdminServiceImpl implements SuperAdminService {
         admin.setRole(Role.ADMIN);
         admin.setOrganisation(org);
         admin.setIsactive(true);
-        return userRepository.save(admin);
+        return new UserResponse(userRepository.save(admin));
     }
 
     @Override
@@ -62,8 +64,5 @@ public class SuperAdminServiceImpl implements SuperAdminService {
         return organisationRepository.findAll();
     }
 
-    @Override
-    public List<User> getAdminsByOrganisation(Long orgId) {
-        return userRepository.findAllByOrganisation_IdAndRole(orgId, Role.ADMIN);
-    }
+
 }
