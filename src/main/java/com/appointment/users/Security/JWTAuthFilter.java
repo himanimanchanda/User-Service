@@ -35,6 +35,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
+        System.out.println(token);
         try {
             Claims claims = jwt.validateToken(token);
             String roleStr = claims.get("role", String.class);
